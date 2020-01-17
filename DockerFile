@@ -1,0 +1,22 @@
+# used to get the dot net 3.1 format from 
+#  https://docs.microsoft.com/en-nz/aspnet/core/host-and-deploy/docker/building-net-docker-images?view=aspnetcore-3.1
+
+# run the following steps
+# 1 - docker build -t aspnetcoreondocker:v1.0 .
+# 2 - docker run -ti -p 5080:80 aspnetcoreondocker:v1.0
+# 3 - http://localhost:5080/
+# 4 - docker tag aspnetcore-docker-image:v1.0 houssemdocker/dockerdemo:v1.0
+# 5 - docker image ls
+# 6 - docker login -u "next9steps" -p "peeet30" docker.i
+# 7 - docker tag aspnetcoreondocker next9steps/aspnetcoreondocker:v1.0
+# 8 - docker push next9steps/aspnetcoreondocker:v1.0
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+WORKDIR /code
+COPY . .
+RUN dotnet restore
+RUN dotnet publish --output /output --configuration Release
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
+COPY --from=build /output /app
+WORKDIR /app
+ENTRYPOINT [ "dotnet", "AspNetCoreOnDocker.dll" ]
